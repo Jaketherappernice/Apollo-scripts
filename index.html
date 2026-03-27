@@ -8,13 +8,14 @@
     <style>
         :root { --primary: #ff6a00; --bg: #050505; --card: #111; --border: rgba(255,255,255,0.1); }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: white; padding-bottom: 100px; }
-        header { padding: 20px; text-align: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); sticky: top; }
+        header { padding: 20px; text-align: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         header h1 { margin: 0; font-size: 22px; color: var(--primary); letter-spacing: 2px; }
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 12px; transition: 0.3s; }
         .card:hover { border-color: var(--primary); transform: translateY(-3px); }
         .card img { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; margin-bottom: 10px; }
+        .card h3 { font-size: 14px; margin: 10px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .btn-copy { width: 100%; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; }
         #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #28a745; padding: 10px 20px; border-radius: 50px; display: none; z-index: 1000; }
     </style>
@@ -49,10 +50,13 @@
     const db = getDatabase(app);
     const analytics = getAnalytics(app);
 
-    // Fetch scripts from Firebase
+    // Local cache to store scripts by ID
+    let scriptCache = {};
+
     const scriptRef = ref(db, 'scripts/');
     onValue(scriptRef, (snapshot) => {
         const data = snapshot.val();
+        scriptCache = data || {}; // Store full data globally within the module
         renderGrid(data);
     });
 
@@ -63,21 +67,29 @@
 
         Object.keys(data).forEach(key => {
             const s = data[key];
-            grid.innerHTML += `
-                <div class="card">
-                    <img src="${s.img || 'https://via.placeholder.com/150'}" onerror="this.src='https://via.placeholder.com/150'">
-                    <h3>${s.title}</h3>
-                    <button class="btn-copy" onclick="copyCode('${s.code}')">Copy Code</button>
-                </div>
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${s.img || 'https://via.placeholder.com/150'}" onerror="this.src='https://via.placeholder.com/150'">
+                <h3>${s.title}</h3>
+                <button class="btn-copy">Copy Code</button>
             `;
+            
+            // Attach event listener directly so the code stays in memory, not the HTML
+            card.querySelector('.btn-copy').onclick = () => copyCode(s.code);
+            
+            grid.appendChild(card);
         });
     }
 
     window.copyCode = (code) => {
-        navigator.clipboard.writeText(code);
-        const toast = document.getElementById('toast');
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 2000);
+        navigator.clipboard.writeText(code).then(() => {
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
     };
 </script>
 </body>
