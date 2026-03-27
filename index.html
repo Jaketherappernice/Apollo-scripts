@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo Scripts | Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff6a00; --bg: #050505; --card: #111; --border: rgba(255,255,255,0.1); }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: white; padding-bottom: 100px; }
+        header { padding: 20px; text-align: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); sticky: top; }
+        header h1 { margin: 0; font-size: 22px; color: var(--primary); letter-spacing: 2px; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 12px; transition: 0.3s; }
+        .card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .card img { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; margin-bottom: 10px; }
+        .btn-copy { width: 100%; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #28a745; padding: 10px 20px; border-radius: 50px; display: none; z-index: 1000; }
+    </style>
+</head>
+<body>
+
+<header><h1>APOLLO SCRIPTS</h1></header>
+
+<div class="container">
+    <div class="grid" id="scriptGrid">Loading scripts...</div>
+</div>
+
+<div id="toast">Code Copied!</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCiXjkVA1vmsNu8gO3e-6HhJ330DGsNq5c",
+        authDomain: "apollo-scripts.firebaseapp.com",
+        databaseURL: "https://apollo-scripts-default-rtdb.firebaseio.com",
+        projectId: "apollo-scripts",
+        storageBucket: "apollo-scripts.firebasestorage.app",
+        messagingSenderId: "283636565641",
+        appId: "1:283636565641:web:b4faba0b16bcff882ae858",
+        measurementId: "G-09QZ3SX61C"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const analytics = getAnalytics(app);
+
+    // Fetch scripts from Firebase
+    const scriptRef = ref(db, 'scripts/');
+    onValue(scriptRef, (snapshot) => {
+        const data = snapshot.val();
+        renderGrid(data);
+    });
+
+    function renderGrid(data) {
+        const grid = document.getElementById('scriptGrid');
+        grid.innerHTML = "";
+        if (!data) { grid.innerHTML = "No scripts found."; return; }
+
+        Object.keys(data).forEach(key => {
+            const s = data[key];
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${s.img || 'https://via.placeholder.com/150'}" onerror="this.src='https://via.placeholder.com/150'">
+                    <h3>${s.title}</h3>
+                    <button class="btn-copy" onclick="copyCode('${s.code}')">Copy Code</button>
+                </div>
+            `;
+        });
+    }
+
+    window.copyCode = (code) => {
+        navigator.clipboard.writeText(code);
+        const toast = document.getElementById('toast');
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 2000);
+    };
+</script>
+</body>
+</html>
