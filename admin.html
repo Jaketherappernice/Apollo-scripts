@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff6a00; --danger: #ff4444; --bg: #080808; --card: #121212; --border: rgba(255,255,255,0.1); }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: white; padding: 20px; }
+        .admin-box { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; max-width: 600px; margin: 0 auto 30px; }
+        input, textarea { width: 100%; background: #1a1a1a; border: 1px solid var(--border); padding: 12px; color: white; border-radius: 8px; margin-bottom: 10px; outline: none; }
+        .btn-add { width: 100%; background: var(--primary); border: none; padding: 12px; color: white; font-weight: 700; border-radius: 8px; cursor: pointer; }
+        table { width: 100%; max-width: 800px; margin: 0 auto; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        .btn-del { color: var(--danger); background: none; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="admin-box">
+    <h2>Manage Scripts</h2>
+    <input type="text" id="title" placeholder="Script Name">
+    <input type="text" id="code" placeholder="Script Code">
+    <input type="text" id="img" placeholder="Thumbnail Image URL">
+    <button class="btn-add" id="submitBtn">Add Script to Database</button>
+</div>
+
+<table>
+    <thead><tr><th>Name</th><th>Action</th></tr></thead>
+    <tbody id="adminTable"></tbody>
+</table>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCiXjkVA1vmsNu8gO3e-6HhJ330DGsNq5c",
+        authDomain: "apollo-scripts.firebaseapp.com",
+        databaseURL: "https://apollo-scripts-default-rtdb.firebaseio.com",
+        projectId: "apollo-scripts",
+        storageBucket: "apollo-scripts.firebasestorage.app",
+        messagingSenderId: "283636565641",
+        appId: "1:283636565641:web:b4faba0b16bcff882ae858"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // ADD DATA
+    document.getElementById('submitBtn').addEventListener('click', () => {
+        const title = document.getElementById('title').value;
+        const code = document.getElementById('code').value;
+        const img = document.getElementById('img').value;
+
+        if(title && code) {
+            push(ref(db, 'scripts/'), { title, code, img });
+            document.querySelectorAll('input').forEach(i => i.value = "");
+        }
+    });
+
+    // LISTEN & RENDER
+    onValue(ref(db, 'scripts/'), (snapshot) => {
+        const data = snapshot.val();
+        const tbody = document.getElementById('adminTable');
+        tbody.innerHTML = "";
+        if(data) {
+            Object.keys(data).forEach(key => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${data[key].title}</td>
+                        <td><button class="btn-del" onclick="deleteItem('${key}')">Delete</button></td>
+                    </tr>
+                `;
+            });
+        }
+    });
+
+    // DELETE FUNCTION
+    window.deleteItem = (key) => {
+        if(confirm("Delete this script?")) {
+            remove(ref(db, 'scripts/' + key));
+        }
+    };
+</script>
+</body>
+</html>
