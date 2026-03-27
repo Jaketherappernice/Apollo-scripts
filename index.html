@@ -9,30 +9,34 @@
         :root { --primary: #ff6a00; --bg: #050505; --card: #111; --border: rgba(255,255,255,0.1); }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: white; padding-bottom: 120px; }
         
-        header { padding: 20px; text-align: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-        header h1 { margin: 0; font-size: 22px; color: var(--primary); letter-spacing: 2px; }
+        header { padding: 15px 20px; text-align: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .logo { height: 50px; width: auto; object-fit: contain; }
+        header h1 { margin: 0; font-size: 20px; color: var(--primary); letter-spacing: 2px; font-weight: 800; }
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 12px; transition: 0.3s; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 12px; transition: 0.3s; display: flex; flex-direction: column; }
         .card:hover { border-color: var(--primary); transform: translateY(-3px); }
         .card img { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; margin-bottom: 10px; }
         .card h3 { font-size: 14px; margin: 10px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
         
-        .btn-copy { width: 100%; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .btn-copy { width: 100%; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: auto; }
         
         /* Fixed Search Bar at the Bottom */
-        .search-container { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); padding: 20px; border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 1000; display: flex; justify-content: center; }
-        #searchInput { width: 90%; max-width: 600px; padding: 12px 20px; border-radius: 50px; border: 1px solid var(--border); background: #1a1a1a; color: white; outline: none; transition: 0.3s; }
-        #searchInput:focus { border-color: var(--primary); }
+        .search-container { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); padding: 20px; border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 1000; display: flex; justify-content: center; box-sizing: border-box; }
+        #searchInput { width: 100%; max-width: 600px; padding: 12px 20px; border-radius: 50px; border: 1px solid var(--border); background: #1a1a1a; color: white; outline: none; transition: 0.3s; font-size: 16px; }
+        #searchInput:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(255, 106, 0, 0.2); }
 
-        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #28a745; padding: 10px 20px; border-radius: 50px; display: none; z-index: 1100; font-weight: 600; }
+        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 10px 20px; border-radius: 50px; display: none; z-index: 1100; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-<header><h1>APOLLO SCRIPTS</h1></header>
+<header>
+    <img src="https://i.imgur.com/E88yEPO.png" alt="Apollo Logo" class="logo">
+    <h1>APOLLO SCRIPTS</h1>
+</header>
 
 <div class="container">
     <div class="grid" id="scriptGrid">Loading scripts...</div>
@@ -62,53 +66,59 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    let allScripts = {};
-
     const scriptRef = ref(db, 'scripts/');
     onValue(scriptRef, (snapshot) => {
-        allScripts = snapshot.val() || {};
-        renderGrid(allScripts);
+        const data = snapshot.val() || {};
+        renderGrid(data);
     });
 
     function renderGrid(data) {
         const grid = document.getElementById('scriptGrid');
         grid.innerHTML = "";
-        if (!data || Object.keys(data).length === 0) { grid.innerHTML = "No scripts found."; return; }
+        
+        const keys = Object.keys(data);
+        if (keys.length === 0) { 
+            grid.innerHTML = "<p style='text-align:center; width:100%;'>No scripts found.</p>"; 
+            return; 
+        }
 
-        Object.keys(data).forEach(key => {
+        keys.forEach(key => {
             const s = data[key];
             const card = document.createElement('div');
             card.className = 'card';
             card.setAttribute('data-title', s.title.toLowerCase());
+            
             card.innerHTML = `
                 <img src="${s.img || 'https://via.placeholder.com/150'}" onerror="this.src='https://via.placeholder.com/150'">
                 <h3>${s.title}</h3>
                 <button class="btn-copy">Copy Code</button>
             `;
             
-            // Fix: Keep the code in the listener, not the HTML button label
+            // This event listener keeps the script code out of the HTML button label
             card.querySelector('.btn-copy').onclick = () => copyCode(s.code);
             
             grid.appendChild(card);
         });
     }
 
-    // Global filtering function
+    // Search function logic
     window.filterScripts = () => {
         const query = document.getElementById('searchInput').value.toLowerCase();
         const cards = document.querySelectorAll('.card');
         cards.forEach(card => {
             const title = card.getAttribute('data-title');
-            card.style.display = title.includes(query) ? "block" : "none";
+            card.style.display = title.includes(query) ? "flex" : "none";
         });
     };
 
-    // Global copy function
+    // Clipboard copy logic
     window.copyCode = (code) => {
         navigator.clipboard.writeText(code).then(() => {
             const toast = document.getElementById('toast');
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 2000);
+        }).catch(err => {
+            alert("Failed to copy code. Please try again.");
         });
     };
 </script>
