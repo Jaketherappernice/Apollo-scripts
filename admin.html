@@ -10,6 +10,7 @@
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: white; padding: 20px; }
         .admin-box { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; max-width: 600px; margin: 0 auto 30px; }
         input, textarea { width: 100%; background: #1a1a1a; border: 1px solid var(--border); padding: 12px; color: white; border-radius: 8px; margin-bottom: 10px; outline: none; font-family: inherit; box-sizing: border-box; }
+        textarea { min-height: 80px; resize: vertical; } /* Added for description visibility */
         .btn-add { width: 100%; background: var(--primary); border: none; padding: 12px; color: white; font-weight: 700; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: 0.2s; }
         .btn-add:hover { background: #e05f00; }
         
@@ -41,6 +42,7 @@
     <h2>Manage Scripts</h2>
     <div id="formStatus" class="status-msg"></div>
     <input type="text" id="title" placeholder="Script Name">
+    <textarea id="description" placeholder="Script Description"></textarea>
     <input type="text" id="code" placeholder="Script Code">
     <input type="text" id="img" placeholder="Thumbnail Image URL">
     <button class="btn-add" id="submitBtn">Add Script to Database</button>
@@ -61,6 +63,7 @@
     <div class="modal-content">
         <h3>✏️ Edit Script</h3>
         <input type="text" id="editTitle" placeholder="Script Name">
+        <textarea id="editDescription" placeholder="Script Description"></textarea>
         <input type="text" id="editCode" placeholder="Script Code">
         <input type="text" id="editImg" placeholder="Thumbnail Image URL">
         <div class="modal-actions">
@@ -90,11 +93,13 @@
     // DOM elements
     const submitBtn = document.getElementById('submitBtn');
     const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description'); // New
     const codeInput = document.getElementById('code');
     const imgInput = document.getElementById('img');
     const adminTableBody = document.getElementById('adminTable');
     const editModal = document.getElementById('editModal');
     const editTitle = document.getElementById('editTitle');
+    const editDescription = document.getElementById('editDescription'); // New
     const editCode = document.getElementById('editCode');
     const editImg = document.getElementById('editImg');
     const saveEditBtn = document.getElementById('saveEditBtn');
@@ -103,7 +108,7 @@
     const searchInput = document.getElementById('searchInput');
     
     let currentEditKey = null;
-    let allScriptsData = {}; // Store data locally for searching
+    let allScriptsData = {};
 
     function showStatus(message, isError = false) {
         formStatus.textContent = message;
@@ -116,21 +121,27 @@
     // ADD DATA
     submitBtn.addEventListener('click', () => {
         const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim(); // New
         const code = codeInput.value.trim();
         const img = imgInput.value.trim();
         if(title && code) {
-            push(ref(db, 'scripts/'), { title, code, img: img || "" })
-                .then(() => {
-                    showStatus("✅ Script added successfully!");
-                    titleInput.value = ""; codeInput.value = ""; imgInput.value = "";
-                })
-                .catch(err => showStatus("❌ Error adding script", true));
+            push(ref(db, 'scripts/'), { 
+                title, 
+                description: description || "", 
+                code, 
+                img: img || "" 
+            })
+            .then(() => {
+                showStatus("✅ Script added successfully!");
+                titleInput.value = ""; descriptionInput.value = ""; codeInput.value = ""; imgInput.value = "";
+            })
+            .catch(err => showStatus("❌ Error adding script", true));
         } else {
             showStatus("⚠️ Please fill at least Name and Script Code", true);
         }
     });
     
-    // RENDER TABLE with Filtering
+    // RENDER TABLE
     function renderTable(data, filter = "") {
         adminTableBody.innerHTML = "";
         const searchTerm = filter.toLowerCase();
@@ -141,7 +152,6 @@
                 const script = data[key];
                 const titleText = script.title || "Untitled";
 
-                // Check if title matches search
                 if (titleText.toLowerCase().includes(searchTerm)) {
                     hasVisibleRows = true;
                     const row = document.createElement('tr');
@@ -159,6 +169,7 @@
                     editBtn.onclick = () => {
                         currentEditKey = key;
                         editTitle.value = script.title || "";
+                        editDescription.value = script.description || ""; // New
                         editCode.value = script.code || "";
                         editImg.value = script.img || "";
                         editModal.style.display = 'flex';
@@ -189,13 +200,11 @@
         }
     }
     
-    // LISTEN & STORE
     onValue(ref(db, 'scripts/'), (snapshot) => {
         allScriptsData = snapshot.val() || {};
         renderTable(allScriptsData, searchInput.value);
     });
 
-    // SEARCH EVENT
     searchInput.addEventListener('input', (e) => {
         renderTable(allScriptsData, e.target.value);
     });
@@ -204,11 +213,15 @@
     saveEditBtn.addEventListener('click', () => {
         if(currentEditKey) {
             const updatedTitle = editTitle.value.trim();
+            const updatedDescription = editDescription.value.trim(); // New
             const updatedCode = editCode.value.trim();
             const updatedImg = editImg.value.trim();
             if(updatedTitle && updatedCode) {
                 set(ref(db, 'scripts/' + currentEditKey), {
-                    title: updatedTitle, code: updatedCode, img: updatedImg || ""
+                    title: updatedTitle, 
+                    description: updatedDescription || "", 
+                    code: updatedCode, 
+                    img: updatedImg || ""
                 }).then(() => {
                     showStatus("✏️ Script updated successfully!");
                     closeEditModal();
