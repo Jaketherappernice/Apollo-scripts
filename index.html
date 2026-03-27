@@ -3,20 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Title</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Apollo Scripts | Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff6a00; --bg: #050505; --card: #111; --border: rgba(255,255,255,0.1); }
+        
+        body { 
+            margin: 0; 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(-45deg, #050505, #1a0a00, #ff6a00, #050505);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: white; 
+            padding-bottom: 120px; 
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Slimmer Header */
+        header { 
+            padding: 10px 20px; 
+            text-align: center; 
+            background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(10px); 
+            border-bottom: 1px solid var(--border); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px; 
+        }
+        .logo { height: 35px; width: auto; object-fit: contain; }
+        header h1 { margin: 0; font-size: 18px; color: var(--primary); letter-spacing: 2px; font-weight: 800; }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 12px; transition: 0.3s; display: flex; flex-direction: column; }
+        .card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .card img { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; margin-bottom: 10px; }
+        .card h3 { font-size: 14px; margin: 10px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+        
+        .btn-copy { width: 100%; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: auto; }
+        
+        .search-container { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); padding: 20px; border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 1000; display: flex; justify-content: center; box-sizing: border-box; }
+        #searchInput { width: 100%; max-width: 600px; padding: 12px 20px; border-radius: 50px; border: 1px solid var(--border); background: #1a1a1a; color: white; outline: none; transition: 0.3s; font-size: 16px; }
+        #searchInput:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(255, 106, 0, 0.2); }
+
+        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 10px 20px; border-radius: 50px; display: none; z-index: 1100; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Apollo Scripts</h1>
-    </header>
-    <main>
-        <section>
-            <p>This is the main content area.</p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 Apollo Scripts</p>
-    </footer>
+
+<header>
+    <img src="https://i.imgur.com/E88yEPO.png" alt="Apollo Logo" class="logo">
+    <h1>APOLLO SCRIPTS</h1>
+</header>
+
+<div class="container">
+    <div class="grid" id="scriptGrid">Loading scripts...</div>
+</div>
+
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search scripts..." onkeyup="filterScripts()">
+</div>
+
+<div id="toast">Code Copied!</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCiXjkVA1vmsNu8gO3e-6HhJ330DGsNq5c",
+        authDomain: "apollo-scripts.firebaseapp.com",
+        databaseURL: "https://apollo-scripts-default-rtdb.firebaseio.com",
+        projectId: "apollo-scripts",
+        storageBucket: "apollo-scripts.firebasestorage.app",
+        messagingSenderId: "283636565641",
+        appId: "1:283636565641:web:b4faba0b16bcff882ae858",
+        measurementId: "G-09QZ3SX61C"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const scriptRef = ref(db, 'scripts/');
+    onValue(scriptRef, (snapshot) => {
+        const data = snapshot.val() || {};
+        renderGrid(data);
+    });
+
+    function renderGrid(data) {
+        const grid = document.getElementById('scriptGrid');
+        grid.innerHTML = "";
+        
+        // Reverse the keys to show newest first
+        const keys = Object.keys(data).reverse();
+        
+        if (keys.length === 0) { 
+            grid.innerHTML = "<p style='text-align:center; width:100%;'>No scripts found.</p>"; 
+            return; 
+        }
+
+        keys.forEach(key => {
+            const s = data[key];
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-title', s.title.toLowerCase());
+            
+            card.innerHTML = `
+                <img src="${s.img || 'https://via.placeholder.com/150'}" onerror="this.src='https://via.placeholder.com/150'">
+                <h3>${s.title}</h3>
+                <button class="btn-copy">Copy Code</button>
+            `;
+            
+            card.querySelector('.btn-copy').onclick = () => copyCode(s.code);
+            
+            grid.appendChild(card);
+        });
+    }
+
+    window.filterScripts = () => {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            const title = card.getAttribute('data-title');
+            card.style.display = title.includes(query) ? "flex" : "none";
+        });
+    };
+
+    window.copyCode = (code) => {
+        navigator.clipboard.writeText(code).then(() => {
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 2000);
+        }).catch(err => {
+            alert("Failed to copy code. Please try again.");
+        });
+    };
+</script>
+
 </body>
 </html>
