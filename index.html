@@ -6,31 +6,33 @@
     <title>Apollo Scripts | Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ff6a00; --bg: #050505; --card: #111; --border: rgba(255,255,255,0.1); }
+        :root { 
+            --primary: #ff6a00; 
+            --secondary: #00d4ff;
+            --bg: #030303; 
+            --card: rgba(15, 15, 15, 0.85); 
+            --border: rgba(255, 255, 255, 0.05); 
+        }
         
         body { 
             margin: 0; 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(-45deg, #050505, #1a0a00, #ff6a00, #050505);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            /* Improved Performance: Static Gradient instead of animated 400% background */
+            background: radial-gradient(circle at top right, #100800, transparent 40%),
+                        radial-gradient(circle at bottom left, #000810, transparent 40%),
+                        #050505;
+            background-attachment: fixed;
             color: white; 
-            padding-bottom: 120px; 
+            padding-bottom: 140px; 
             min-height: 100vh;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
         /* Slimmer Header */
         header { 
-            padding: 10px 20px; 
+            padding: 12px 20px; 
             text-align: center; 
-            background: rgba(0,0,0,0.8); 
-            backdrop-filter: blur(10px); 
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(12px); 
             border-bottom: 1px solid var(--border); 
             position: sticky; 
             top: 0; 
@@ -39,40 +41,120 @@
             flex-direction: row; 
             align-items: center; 
             justify-content: center; 
-            gap: 15px; 
+            gap: 12px; 
         }
-        .logo { height: 35px; width: auto; object-fit: contain; }
-        header h1 { margin: 0; font-size: 18px; color: var(--primary); letter-spacing: 2px; font-weight: 800; }
+        .logo { height: 30px; width: auto; object-fit: contain; }
+        header h1 { 
+            margin: 0; 
+            font-size: 16px; 
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px; 
+            font-weight: 800; 
+        }
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 18px; }
         
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 12px; transition: 0.3s; display: flex; flex-direction: column; cursor: pointer; }
-        .card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .card { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 16px; 
+            padding: 12px; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            display: flex; 
+            flex-direction: column; 
+            cursor: pointer; 
+            position: relative;
+        }
+        .card:hover { 
+            border-color: var(--secondary); 
+            transform: translateY(-5px); 
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+        }
         .card img { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; margin-bottom: 10px; }
-        .card h3 { font-size: 14px; margin: 10px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+        .card h3 { font-size: 14px; margin: 8px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-weight: 600; color: #eee; }
         
-        .btn-copy { width: 100%; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: auto; transition: 0.2s; }
-        .btn-copy:hover { opacity: 0.9; }
+        .btn-copy { 
+            width: 100%; 
+            background: linear-gradient(135deg, var(--primary), #e65c00); 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            margin-top: auto; 
+            transition: 0.2s; 
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .btn-copy:hover { filter: brightness(1.2); transform: scale(1.02); }
 
-        .search-container { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); padding: 20px; border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 1000; display: flex; justify-content: center; box-sizing: border-box; }
-        #searchInput { width: 100%; max-width: 600px; padding: 12px 20px; border-radius: 50px; border: 1px solid var(--border); background: #1a1a1a; color: white; outline: none; transition: 0.3s; font-size: 16px; }
-        #searchInput:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(255, 106, 0, 0.2); }
+        .search-container { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: linear-gradient(transparent, rgba(0,0,0,0.95)); 
+            padding: 30px 20px; 
+            backdrop-filter: blur(8px); 
+            z-index: 1000; 
+            display: flex; 
+            justify-content: center; 
+            box-sizing: border-box; 
+        }
+        #searchInput { 
+            width: 100%; 
+            max-width: 500px; 
+            padding: 14px 25px; 
+            border-radius: 50px; 
+            border: 1px solid var(--border); 
+            background: rgba(15, 15, 15, 0.9); 
+            color: white; 
+            outline: none; 
+            transition: 0.3s; 
+            font-size: 16px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        #searchInput:focus { border-color: var(--secondary); box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); }
 
-        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 10px 20px; border-radius: 50px; display: none; z-index: 1100; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        #toast { position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 10px 25px; border-radius: 50px; display: none; z-index: 1100; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 14px; }
 
-        /* --- NEW: Details Page Styles --- */
-        #detailsContainer { display: none; }
-        .details-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 30px; }
-        .btn-back { display: inline-block; background: transparent; color: white; border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; text-decoration: none; margin-bottom: 20px; transition: 0.3s; font-weight: 600; cursor: pointer; }
-        .btn-back:hover { border-color: var(--primary); color: var(--primary); }
+        /* Details Page Styles */
+        #detailsContainer { display: none; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .details-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .btn-back { display: inline-block; background: transparent; color: #888; border: 1px solid var(--border); padding: 8px 18px; border-radius: 8px; text-decoration: none; margin-bottom: 20px; transition: 0.3s; font-size: 14px; font-weight: 600; }
+        .btn-back:hover { border-color: var(--secondary); color: var(--secondary); }
+        
         .details-header { display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start; margin-bottom: 30px; }
-        .details-header img { width: 250px; height: 250px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
+        .details-header img { width: 260px; height: 260px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border); }
         .details-info { flex: 1; min-width: 250px; }
-        .details-info h2 { margin-top: 0; color: var(--primary); font-size: 28px; margin-bottom: 15px; }
-        .details-info p { color: #ccc; line-height: 1.6; margin-bottom: 25px; font-size: 15px; }
-        .code-title { margin-bottom: 10px; font-size: 18px; color: white; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .code-box { background: #000; padding: 20px; border-radius: 10px; border: 1px solid var(--border); overflow-x: auto; font-family: monospace; color: #4af626; white-space: pre-wrap; word-break: break-all; margin-bottom: 20px; font-size: 14px; }
+        .details-info h2 { margin-top: 0; color: var(--secondary); font-size: 26px; margin-bottom: 12px; font-weight: 800; }
+        .details-info p { color: #aaa; line-height: 1.6; margin-bottom: 25px; font-size: 15px; }
+        
+        .code-title { margin-bottom: 10px; font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+        .code-box { 
+            background: #000; 
+            padding: 20px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+            overflow-x: auto; 
+            font-family: 'Consolas', monospace; 
+            color: #00ffcc; 
+            white-space: pre-wrap; 
+            word-break: break-all; 
+            margin-bottom: 20px; 
+            font-size: 13px; 
+            line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -94,7 +176,7 @@
             <div class="details-info">
                 <h2 id="detailsTitle">Loading...</h2>
                 <p id="detailsDesc">Description will appear here if available in your database.</p>
-                <button class="btn-copy" id="detailsCopyBtn" style="width: auto; padding: 12px 30px; font-size: 16px;">Copy Code</button>
+                <button class="btn-copy" id="detailsCopyBtn" style="width: auto; padding: 12px 35px; font-size: 14px;">Copy Code</button>
             </div>
         </div>
         <div class="code-title">Raw Script Code</div>
@@ -126,15 +208,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Check URL for script ID (e-commerce product page simulation)
     const urlParams = new URLSearchParams(window.location.search);
     const currentScriptId = urlParams.get('id');
 
     const scriptRef = ref(db, 'scripts/');
     onValue(scriptRef, (snapshot) => {
         const data = snapshot.val() || {};
-        
-        // If there's an ID in the URL and it exists in DB, show details. Otherwise, show grid.
         if (currentScriptId && data[currentScriptId]) {
             renderDetailsPage(data[currentScriptId]);
         } else {
@@ -143,19 +222,16 @@
     });
 
     function renderGrid(data) {
-        // Ensure correct containers are visible
         document.getElementById('mainContainer').style.display = 'block';
         document.getElementById('detailsContainer').style.display = 'none';
         document.getElementById('searchContainer').style.display = 'flex';
 
         const grid = document.getElementById('scriptGrid');
         grid.innerHTML = "";
-        
-        // Reverse the keys to show newest first
         const keys = Object.keys(data).reverse();
         
         if (keys.length === 0) { 
-            grid.innerHTML = "<p style='text-align:center; width:100%;'>No scripts found.</p>"; 
+            grid.innerHTML = "<p style='text-align:center; width:100%; color:#555;'>No scripts found.</p>"; 
             return; 
         }
 
@@ -171,35 +247,27 @@
                 <button class="btn-copy">Copy Code</button>
             `;
             
-            // Clicking the card takes the user to the "details page"
-            card.onclick = () => {
-                window.location.href = `?id=${key}`;
-            };
-            
-            // Clicking the copy button copies code and prevents the card click event from firing
+            card.onclick = () => { window.location.href = `?id=${key}`; };
             card.querySelector('.btn-copy').onclick = (e) => {
-                e.stopPropagation(); // Stops the user from being redirected to the details page
+                e.stopPropagation(); 
                 copyCode(s.code);
             };
-            
             grid.appendChild(card);
         });
     }
 
     function renderDetailsPage(scriptData) {
-        // Hide the grid and search bar, show the details container
         document.getElementById('mainContainer').style.display = 'none';
         document.getElementById('searchContainer').style.display = 'none';
         document.getElementById('detailsContainer').style.display = 'block';
+        window.scrollTo(0,0);
 
-        // Populate details
         document.getElementById('detailsImg').src = scriptData.img || 'https://via.placeholder.com/150';
         document.getElementById('detailsImg').onerror = function() { this.src='https://via.placeholder.com/150' };
         document.getElementById('detailsTitle').innerText = scriptData.title || "Untitled Script";
         document.getElementById('detailsDesc').innerText = scriptData.description || "No description provided for this script.";
         document.getElementById('detailsCode').innerText = scriptData.code || "// No code available";
 
-        // Setup the details copy button
         document.getElementById('detailsCopyBtn').onclick = () => copyCode(scriptData.code);
     }
 
@@ -218,7 +286,7 @@
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 2000);
         }).catch(err => {
-            alert("Failed to copy code. Please try again.");
+            alert("Failed to copy code.");
         });
     };
 </script>
