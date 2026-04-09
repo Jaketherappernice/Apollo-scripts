@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff6a00;
+            --primary-dark: #e05f00;
+            --danger: #ff4444;
+            --edit: #2c7da0;
+            --bg: #0a0a0a;
+            --card: #121212;
+            --card-hover: #1a1a1a;
+            --border: rgba(255,255,255,0.08);
+            --text: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --success: #4ade80;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), #ff9a50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 8px;
+            font-weight: 400;
+        }
+
+        .admin-card {
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(255, 106, 0, 0.15);
+        }
+
+        .card-header {
+            background: rgba(255, 106, 0, 0.08);
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .add-form {
+            padding: 32px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        input, textarea {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            color: white;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 106, 0, 0.15);
+            outline: none;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-add {
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary), #ff9a50);
+            border: none;
+            padding: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 106, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 106, 0, 0.4);
+            background: linear-gradient(90deg, #ff9a50, var(--primary));
+        }
+
+        .search-container {
+            max-width: 1100px;
+            margin: 40px auto 20px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 16px 24px 16px 60px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 106, 0, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.4rem;
+        }
+
+        .table-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(255, 106, 0, 0.06);
+            padding: 20px 24px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 22px 24px;
+            border-top: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .script-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-edit {
+            background: rgba(44, 125, 160, 0.15);
+            color: var(--edit);
+        }
+
+        .btn-edit:hover {
+            background: rgba(44, 125, 160, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-del {
+            background: rgba(255, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .btn-del:hover {
+            background: rgba(255, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(12px);
+        }
+
+        .modal-content {
+            background: var(--card);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            width: 90%;
+            max-width: 560px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 28px 32px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .modal-actions {
+            padding: 24px 32px;
+            background: rgba(255,255,255,0.03);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-actions button {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-edit {
+            background: #2a2a2a;
+            color: white;
+            border: none;
+        }
+
+        .cancel-edit:hover {
+            background: #333;
+        }
+
+        .save-edit {
+            background: linear-gradient(90deg, var(--primary), #ff9a50);
+            color: white;
+            border: none;
+        }
+
+        .save-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 106, 0, 0.3);
+        }
+
+        .status-msg {
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin: 0 32px 20px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 20px 10px; }
+            .admin-card, .table-container { border-radius: 16px; }
+            td, th { padding: 16px 18px; }
+            .action-buttons { flex-direction: column; gap: 8px; }
+            .btn-action { justify-content: center; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo">
+            <i class="fas fa-rocket"></i>
+            Apollo
+        </div>
+        <p class="subtitle">Admin Panel • Script Management</p>
+    </header>
+
+    <div class="admin-card">
+        <div class="card-header">
+            <h2><i class="fas fa-plus-circle"></i> Add New Script</h2>
+        </div>
+        <div class="add-form">
+            <div id="formStatus" class="status-msg"></div>
+            
+            <div class="form-grid">
+                <div>
+                    <label class="input-label">Script Name</label>
+                    <input type="text" id="title" placeholder="e.g. Advanced Roblox Executor">
+                </div>
+                <div>
+                    <label class="input-label">Thumbnail URL</label>
+                    <input type="text" id="img" placeholder="https://example.com/thumb.png">
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label class="input-label">Description</label>
+                <textarea id="description" placeholder="Brief description of what the script does..."></textarea>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label class="input-label">Script Code</label>
+                <textarea id="code" placeholder="Paste your full script code here..." style="font-family: monospace; font-size: 0.95rem; min-height: 160px;"></textarea>
+            </div>
+
+            <button class="btn-add" id="submitBtn">
+                <i class="fas fa-cloud-upload-alt"></i>
+                Add Script to Database
+            </button>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search scripts by name...">
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 65%;">Script Name</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="adminTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-edit"></i> Edit Script</h3>
+            <button onclick="closeEditModal()" style="background:none;border:none;color:#888;font-size:1.6rem;cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div>
+                    <label class="input-label">Script Name</label>
+                    <input type="text" id="editTitle" placeholder="Script Name">
+                </div>
+                <div>
+                    <label class="input-label">Thumbnail URL</label>
+                    <input type="text" id="editImg" placeholder="Thumbnail Image URL">
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label class="input-label">Description</label>
+                <textarea id="editDescription" placeholder="Script Description"></textarea>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label class="input-label">Script Code</label>
+                <textarea id="editCode" placeholder="Script Code" style="font-family: monospace; min-height: 180px;"></textarea>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="cancel-edit" id="closeModalBtn">Cancel</button>
+            <button class="save-edit" id="saveEditBtn">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCiXjkVA1vmsNu8gO3e-6HhJ330DGsNq5c",
+        authDomain: "apollo-scripts.firebaseapp.com",
+        databaseURL: "https://apollo-scripts-default-rtdb.firebaseio.com",
+        projectId: "apollo-scripts",
+        storageBucket: "apollo-scripts.firebasestorage.app",
+        messagingSenderId: "283636565641",
+        appId: "1:283636565641:web:b4faba0b16bcff882ae858"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+    const codeInput = document.getElementById('code');
+    const imgInput = document.getElementById('img');
+    const adminTableBody = document.getElementById('adminTable');
+    const editModal = document.getElementById('editModal');
+    const editTitle = document.getElementById('editTitle');
+    const editDescription = document.getElementById('editDescription');
+    const editCode = document.getElementById('editCode');
+    const editImg = document.getElementById('editImg');
+    const saveEditBtn = document.getElementById('saveEditBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const formStatus = document.getElementById('formStatus');
+    const searchInput = document.getElementById('searchInput');
+    
+    let currentEditKey = null;
+    let allScriptsData = {};
+
+    function showStatus(message, isError = false) {
+        formStatus.textContent = message;
+        formStatus.style.display = 'flex';
+        formStatus.style.background = isError ? 'rgba(255,68,68,0.15)' : 'rgba(74,222,128,0.15)';
+        formStatus.style.color = isError ? '#ff8888' : 'var(--success)';
+        formStatus.style.border = `1px solid ${isError ? '#ff4444' : '#4ade80'}`;
+        setTimeout(() => { 
+            formStatus.style.display = 'none'; 
+        }, 3000);
+    }
+    
+    submitBtn.addEventListener('click', () => {
+        const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const code = codeInput.value.trim();
+        const img = imgInput.value.trim();
+
+        if (!title || !code) {
+            showStatus("⚠️ Script Name and Code are required", true);
+            return;
+        }
+
+        push(ref(db, 'scripts/'), { 
+            title, 
+            description: description || "", 
+            code, 
+            img: img || "" 
+        })
+        .then(() => {
+            showStatus("✅ Script added successfully!");
+            titleInput.value = "";
+            descriptionInput.value = "";
+            codeInput.value = "";
+            imgInput.value = "";
+        })
+        .catch(() => showStatus("❌ Error adding script", true));
+    });
+    
+    function renderTable(data, filter = "") {
+        adminTableBody.innerHTML = "";
+        const searchTerm = filter.toLowerCase().trim();
+        let hasRows = false;
+
+        if (data) {
+            Object.keys(data).forEach((key, index) => {
+                const script = data[key];
+                const titleText = (script.title || "Untitled").trim();
+
+                if (titleText.toLowerCase().includes(searchTerm)) {
+                    hasRows = true;
+                    const row = document.createElement('tr');
+                    row.classList.add('fade-in');
+                    row.style.animationDelay = `${index * 30}ms`;
+
+                    row.innerHTML = `
+                        <td>
+                            <div class="script-name">${titleText}</div>
+                            ${script.description ? `<div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px; line-height:1.3;">${script.description.substring(0, 90)}${script.description.length > 90 ? '...' : ''}</div>` : ''}
+                        </td>
+                        <td style="text-align: right;">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-edit" onclick="editScript('${key}')">
+                                    <i class="fas fa-pen"></i> Edit
+                                </button>
+                                <button class="btn-action btn-del" onclick="deleteScript('${key}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    adminTableBody.appendChild(row);
+                }
+            });
+        }
+
+        if (!hasRows) {
+            adminTableBody.innerHTML = `
+                <tr>
+                    <td colspan="2">
+                        <div class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            <p>No scripts found${filter ? ' matching your search' : ''}.</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+    
+    window.editScript = function(key) {
+        currentEditKey = key;
+        const script = allScriptsData[key];
+        if (script) {
+            editTitle.value = script.title || "";
+            editDescription.value = script.description || "";
+            editCode.value = script.code || "";
+            editImg.value = script.img || "";
+            editModal.style.display = 'flex';
+        }
+    };
+
+    window.deleteScript = function(key) {
+        if (confirm("Are you sure you want to delete this script?")) {
+            remove(ref(db, 'scripts/' + key))
+                .then(() => showStatus("🗑️ Script deleted successfully"))
+                .catch(() => showStatus("❌ Failed to delete script", true));
+        }
+    };
+
+    window.closeEditModal = function() {
+        editModal.style.display = 'none';
+        currentEditKey = null;
+    };
+
+    saveEditBtn.addEventListener('click', () => {
+        if (!currentEditKey) return;
+
+        const updatedTitle = editTitle.value.trim();
+        const updatedDescription = editDescription.value.trim();
+        const updatedCode = editCode.value.trim();
+        const updatedImg = editImg.value.trim();
+
+        if (!updatedTitle || !updatedCode) {
+            showStatus("⚠️ Name and Code are required", true);
+            return;
+        }
+
+        set(ref(db, 'scripts/' + currentEditKey), {
+            title: updatedTitle, 
+            description: updatedDescription || "", 
+            code: updatedCode, 
+            img: updatedImg || ""
+        }).then(() => {
+            showStatus("✏️ Script updated successfully!");
+            closeEditModal();
+        }).catch(() => showStatus("❌ Failed to update script", true));
+    });
+    
+    closeModalBtn.addEventListener('click', window.closeEditModal);
+    
+    editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) window.closeEditModal();
+    });
+
+    onValue(ref(db, 'scripts/'), (snapshot) => {
+        allScriptsData = snapshot.val() || {};
+        renderTable(allScriptsData, searchInput.value);
+    });
+
+    searchInput.addEventListener('input', (e) => {
+        renderTable(allScriptsData, e.target.value);
+    });
+</script>
+</body>
+</html>
