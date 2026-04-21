@@ -252,14 +252,34 @@
             color: var(--text-muted);
         }
 
-        .card-category {
-            background: rgba(255, 106, 0, 0.1);
-            color: var(--primary);
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        /* ===== CROWN BUTTON (replaces .card-category) ===== */
+        .btn-crown {
+            background: transparent;
+            border: none;
+            padding: 0;
+            font-size: 1.25rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            filter: grayscale(1) opacity(0.35);
         }
+
+        .btn-crown:hover {
+            transform: scale(1.2);
+            filter: grayscale(0) opacity(0.75);
+        }
+
+        .btn-crown.featured {
+            filter: grayscale(0) opacity(1) drop-shadow(0 0 6px rgba(255, 215, 0, 0.7));
+            animation: crownPulse 0.3s ease;
+        }
+
+        @keyframes crownPulse {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+        /* ===== END CROWN ===== */
 
         .btn-card-copy {
             background: transparent;
@@ -660,7 +680,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCiXjkVA1vmsNu8gO3e-6HhJ330DGsNq5c",
@@ -697,7 +717,16 @@
         mainContainer.style.display = 'block';
         detailsContainer.style.display = 'none';
         
-        const keys = Object.keys(data).reverse();
+        const keys = Object.keys(data);
+
+        // Sort: featured first (by their featured timestamp desc), then rest by reverse insert order
+        keys.sort((a, b) => {
+            const fa = data[a].featured || 0;
+            const fb = data[b].featured || 0;
+            if (fb !== fa) return fb - fa; // both featured → newer featured first; featured > unfeatured
+            // neither featured → preserve original reverse order (higher index = newer)
+            return keys.indexOf(b) - keys.indexOf(a);
+        });
         
         if (keys.length === 0) {
             grid.innerHTML = `
@@ -713,6 +742,8 @@
         grid.innerHTML = "";
         keys.forEach(key => {
             const s = data[key];
+            const isFeatured = !!s.featured;
+
             const card = document.createElement('div');
             card.className = 'card';
             card.setAttribute('data-title', `${s.title} ${s.description || ''} ${s.category || ''}`.toLowerCase());
@@ -726,13 +757,21 @@
                 </div>
                 <div class="card-content">
                     <h3 class="card-title">${s.title}</h3>
-                    <div class="card-meta">
-                        <span class="card-category">${s.category || 'Script'}</span>
-                    </div>
+                    <div class="card-meta"></div>
                 </div>
             `;
 
-            // Safe copy button (no code in HTML attributes)
+            // 👑 Crown button (replaces the orange category tag)
+            const crownBtn = document.createElement('button');
+            crownBtn.className = 'btn-crown' + (isFeatured ? ' featured' : '');
+            crownBtn.title = isFeatured ? 'Remove from featured' : 'Pin to top';
+            crownBtn.textContent = '👑';
+            crownBtn.addEventListener('click', (e) => {
+                e.stopImmediatePropagation();
+                toggleFeatured(key, isFeatured);
+            });
+
+            // Copy button
             const copyBtn = document.createElement('button');
             copyBtn.className = 'btn-card-copy';
             copyBtn.innerHTML = `<i class="fas fa-copy"></i> Copy`;
@@ -741,7 +780,9 @@
                 copyCode(s.code);
             });
 
-            card.querySelector('.card-meta').appendChild(copyBtn);
+            const meta = card.querySelector('.card-meta');
+            meta.appendChild(crownBtn);
+            meta.appendChild(copyBtn);
 
             // Card click to open details (ignore if clicking button)
             card.addEventListener('click', (e) => {
@@ -752,6 +793,16 @@
 
             grid.appendChild(card);
         });
+    }
+
+    // Toggle featured in Firebase
+    function toggleFeatured(key, currentlyFeatured) {
+        const featuredRef = ref(db, `scripts/${key}/featured`);
+        if (currentlyFeatured) {
+            remove(featuredRef);
+        } else {
+            set(featuredRef, Date.now());
+        }
     }
 
     function renderDetailsPage(scriptData) {
@@ -870,4 +921,4 @@
 </script>
 
 </body>
-            </html>
+</html>
