@@ -1,4 +1,12 @@
 {
-    "name": "My App",
-    "icons": [{"src": "logo.png", "sizes": "192x192", "type": "image/png"}]
+    "name": "Apollo Scripts",
+    "short_name": "Apollo",
+    "icons": [
+        {
+            "src": "https://github.com/Jaketherappernice/Apollo-scripts/blob/main/received_8596443223785890.jpeg?raw=true",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        }
+    ],
+    "display": "standalone"
 }
