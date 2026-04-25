@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="manifest" href="site.webmanifest">
+    <title>Apollo Scripts | Premium Roblox Scripts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff6a00;
+            --primary-dark: #e55d00;
+            --secondary: #00d4ff;
+            --secondary-dark: #00b8e6;
+            --bg: #0a0a0a;
+            --bg-light: #111111;
+            --card: #161616;
+            --card-hover: #1a1a1a;
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: #a0a0a0;
+            --success: #28a745;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-hover: 0 8px 30px rgba(0, 212, 255, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(255, 106, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 85% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            transition: var(--transition);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo {
+            height: 32px;
+            width: auto;
+            filter: drop-shadow(0 0 8px rgba(255, 106, 0, 0.3));
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            filter: drop-shadow(0 0 12px rgba(255, 106, 0, 0.5));
+        }
+
+        .site-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        #searchInput:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 6rem;
+            min-height: calc(100vh - 80px);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: var(--secondary);
+            font-size: 1.25rem;
+        }
+
+        /* ===== GRID ===== */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+            box-shadow: var(--shadow-hover);
+            background: var(--card-hover);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-img-container {
+            position: relative;
+            padding-top: 100%; /* 1:1 Aspect Ratio */
+            overflow: hidden;
+        }
+
+        .card img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 1.25rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== CROWN BUTTON (replaces .card-category) ===== */
+        .btn-crown {
+            background: transparent;
+            border: none;
+            padding: 0;
+            font-size: 1.25rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            filter: grayscale(1) opacity(0.35);
+        }
+
+        .btn-crown:hover {
+            transform: scale(1.2);
+            filter: grayscale(0) opacity(0.75);
+        }
+
+        .btn-crown.featured {
+            filter: grayscale(0) opacity(1) drop-shadow(0 0 6px rgba(255, 215, 0, 0.7));
+            animation: crownPulse 0.3s ease;
+        }
+
+        @keyframes crownPulse {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+        /* ===== END CROWN ===== */
+
+        .btn-card-copy {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-card-copy:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* ===== DETAILS PAGE ===== */
+        .details-container {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .details-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .details-header {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2.5rem;
+            padding: 2.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .details-img-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .details-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .details-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .details-category {
+            display: inline-block;
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--secondary);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            align-self: flex-start;
+        }
+
+        .details-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            background: linear-gradient(90deg, var(--text), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .details-description {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .details-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--secondary);
+        }
+
+        .code-section {
+            padding: 2.5rem;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .code-title i {
+            color: var(--primary);
+        }
+
+        .code-box {
+            background: #0d0d0d;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .code-box::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .code-box::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .code-box::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .code-box::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--success);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 8px 30px rgba(40, 167, 69, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .search-container {
+                max-width: 100%;
+                order: 3;
+            }
+
+            .details-header {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+
+            .details-img-container {
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .details-title {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+
+            .details-actions {
+                justify-content: center;
+            }
+
+            .code-section {
+                padding: 1.5rem;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem 1rem 5rem;
+            }
+
+            .details-header {
+                padding: 1rem;
+            }
+
+            .btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ===== LOADING STATE ===== */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--secondary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-content">
+        <a href="?" class="logo-container">
+            <img src="https://i.imgur.com/E88yEPO.png" alt="Apollo Logo" class="logo">
+            <span class="site-title">APOLLO SCRIPTS</span>
+        </a>
+        
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" placeholder="Search scripts..." onkeyup="filterScripts()">
+        </div>
+        
+        <div class="header-actions">
+            <a href="?" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
+    </div>
+</header>
+
+<div class="container" id="mainContainer">
+    <div class="section-title">
+        <i class="fas fa-rocket"></i>
+        <span>All Scripts</span>
+    </div>
+    <div class="grid" id="scriptGrid">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading premium scripts...</p>
+        </div>
+    </div>
+</div>
+
+<div class="container details-container" id="detailsContainer">
+    <div class="details-card">
+        <div class="details-header">
+            <div class="details-img-container">
+                <img id="detailsImg" src="" alt="Script Image">
+            </div>
+            <div class="details-info">
+                <span class="details-category" id="detailsCategory">Script</span>
+                <h1 class="details-title" id="detailsTitle">Loading...</h1>
+                <p class="details-description" id="detailsDesc">Description will appear here.</p>
+                <div class="details-actions">
+                    <button class="btn btn-primary" id="detailsCopyBtn">
+                        <i class="fas fa-copy"></i> Copy Code
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="code-section">
+            <div class="code-header">
+                <div class="code-title">
+                    <i class="fas fa-code"></i>
+                    <span>Raw Script Code</span>
+                </div>
+                <div class="code-actions">
+                    <button class="btn btn-secondary" id="copyAllBtn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-copy"></i> Copy All
+                    </button>
+                </div>
+            </div>
+            <div class="code-box" id="detailsCode"></div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span>Code copied to clipboard!</span>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCiXjkVA1vmsNu8gO3e-6HhJ330DGsNq5c",
+        authDomain: "apollo-scripts.firebaseapp.com",
+        databaseURL: "https://apollo-scripts-default-rtdb.firebaseio.com",
+        projectId: "apollo-scripts",
+        storageBucket: "apollo-scripts.firebasestorage.app",
+        messagingSenderId: "283636565641",
+        appId: "1:283636565641:web:b4faba0b16bcff882ae858",
+        measurementId: "G-09QZ3SX61C"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentScriptId = urlParams.get('id');
+
+    const scriptRef = ref(db, 'scripts/');
+    onValue(scriptRef, (snapshot) => {
+        const data = snapshot.val() || {};
+        if (currentScriptId && data[currentScriptId]) {
+            renderDetailsPage(data[currentScriptId]);
+        } else {
+            renderGrid(data);
+        }
+    });
+
+    function renderGrid(data) {
+        const mainContainer = document.getElementById('mainContainer');
+        const detailsContainer = document.getElementById('detailsContainer');
+        const grid = document.getElementById('scriptGrid');
+        
+        mainContainer.style.display = 'block';
+        detailsContainer.style.display = 'none';
+        
+        const keys = Object.keys(data);
+
+        // Sort: featured first (by their featured timestamp desc), then rest by reverse insert order
+        keys.sort((a, b) => {
+            const fa = data[a].featured || 0;
+            const fb = data[b].featured || 0;
+            if (fb !== fa) return fb - fa; // both featured → newer featured first; featured > unfeatured
+            // neither featured → preserve original reverse order (higher index = newer)
+            return keys.indexOf(b) - keys.indexOf(a);
+        });
+        
+        if (keys.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>No Scripts Found</h3>
+                    <p>Check back later for new additions!</p>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = "";
+        keys.forEach(key => {
+            const s = data[key];
+            const isFeatured = !!s.featured;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-title', `${s.title} ${s.description || ''} ${s.category || ''}`.toLowerCase());
+            card.setAttribute('data-category', s.category?.toLowerCase() || '');
+
+            card.innerHTML = `
+                <div class="card-img-container">
+                    <img src="${s.img || 'https://via.placeholder.com/300x300?text=No+Image'}" 
+                         onerror="this.src='https://via.placeholder.com/300x300?text=Image+Error'"
+                         alt="${s.title}">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">${s.title}</h3>
+                    <div class="card-meta"></div>
+                </div>
+            `;
+
+            // 👑 Crown button (replaces the orange category tag)
+            const crownBtn = document.createElement('button');
+            crownBtn.className = 'btn-crown' + (isFeatured ? ' featured' : '');
+            crownBtn.title = isFeatured ? 'Remove from featured' : 'Pin to top';
+            crownBtn.textContent = '👑';
+            crownBtn.addEventListener('click', (e) => {
+                e.stopImmediatePropagation();
+                toggleFeatured(key, isFeatured);
+            });
+
+            // Copy button
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn-card-copy';
+            copyBtn.innerHTML = `<i class="fas fa-copy"></i> Copy`;
+            copyBtn.addEventListener('click', (e) => {
+                e.stopImmediatePropagation();
+                copyCode(s.code);
+            });
+
+            const meta = card.querySelector('.card-meta');
+            meta.appendChild(crownBtn);
+            meta.appendChild(copyBtn);
+
+            // Card click to open details (ignore if clicking button)
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('button')) {
+                    window.location.href = `?id=${key}`;
+                }
+            });
+
+            grid.appendChild(card);
+        });
+    }
+
+    // Toggle featured in Firebase
+    function toggleFeatured(key, currentlyFeatured) {
+        const featuredRef = ref(db, `scripts/${key}/featured`);
+        if (currentlyFeatured) {
+            remove(featuredRef);
+        } else {
+            set(featuredRef, Date.now());
+        }
+    }
+
+    function renderDetailsPage(scriptData) {
+        const mainContainer = document.getElementById('mainContainer');
+        const detailsContainer = document.getElementById('detailsContainer');
+        
+        mainContainer.style.display = 'none';
+        detailsContainer.style.display = 'block';
+        
+        document.getElementById('detailsImg').src = scriptData.img || 'https://via.placeholder.com/300x300?text=No+Image';
+        document.getElementById('detailsImg').onerror = function() { 
+            this.src = 'https://via.placeholder.com/300x300?text=Image+Error';
+        };
+        
+        document.getElementById('detailsTitle').innerText = scriptData.title || "Untitled Script";
+        document.getElementById('detailsCategory').innerText = scriptData.category || "Script";
+        document.getElementById('detailsDesc').innerText = scriptData.description || "No description provided for this script.";
+        document.getElementById('detailsCode').innerText = scriptData.code || "// No code available";
+
+        // Attach copy handlers safely
+        const detailsCopyBtn = document.getElementById('detailsCopyBtn');
+        detailsCopyBtn.onclick = () => copyCode(scriptData.code);
+
+        const copyAllBtn = document.getElementById('copyAllBtn');
+        copyAllBtn.onclick = () => copyCode(scriptData.code);
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.filterScripts = () => {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.card');
+        let hasResults = false;
+        
+        cards.forEach(card => {
+            const title = card.getAttribute('data-title') || '';
+            const category = card.getAttribute('data-category') || '';
+            const matches = title.includes(query) || category.includes(query);
+            card.style.display = matches ? 'flex' : 'none';
+            if (matches) hasResults = true;
+        });
+        
+        const grid = document.getElementById('scriptGrid');
+        if (!hasResults && query) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No Results Found</h3>
+                    <p>Try different keywords or browse all scripts</p>
+                </div>
+            `;
+        }
+    };
+
+    // Main copy function - clean and reliable
+    window.copyCode = (code) => {
+        if (!code || typeof code !== 'string') {
+            console.error('No valid code to copy');
+            return;
+        }
+
+        navigator.clipboard.writeText(code).then(() => {
+            showToast('Code copied to clipboard!');
+        }).catch(err => {
+            console.error('Clipboard API failed:', err);
+            // Fallback method
+            const textArea = document.createElement('textarea');
+            textArea.value = code;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast('Code copied (fallback)!');
+            } catch (e) {
+                console.error('Fallback copy failed:', e);
+                showToast('Failed to copy code', true);
+            }
+            
+            document.body.removeChild(textArea);
+        });
+    };
+
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.innerHTML = isError 
+            ? `<i class="fas fa-exclamation-triangle"></i> <span>${message}</span>`
+            : `<i class="fas fa-check-circle"></i> <span>${message}</span>`;
+        
+        if (isError) toast.style.background = '#dc3545';
+        
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            if (isError) toast.style.background = ''; // reset color
+        }, 3000);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            document.getElementById('searchInput').focus();
+        }
+        if (e.key === 'Escape' && document.activeElement === document.getElementById('searchInput')) {
+            document.getElementById('searchInput').value = '';
+            filterScripts();
+            document.getElementById('searchInput').blur();
+        }
+    });
+</script>
+
+</body>
+</html>
